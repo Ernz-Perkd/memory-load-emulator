@@ -3,28 +3,50 @@ const process = require('process');
 const app = express();
 const port = process.env.PORT || 3000; 
 
-app.get('/', (req, res) => {
+let bufferArray = []
+
+app.get('/allocate', (req, res) => {
   // Receive the desired memory allocation 
-  const requestedMemory = parseInt(req.query.memory, 10) || 0;
+  const requestedMemory = parseInt(req.query.memory, 10) || 0
   // Allocate memory in MB
   const BUFFER_SIZE = requestedMemory * 1024 * 1024;
-  const allocationDelay = 1000; // 1 second
+  const allocationDelay = 1000
 
   const allocateMemory = () => {
-    const buffer = Buffer.alloc(BUFFER_SIZE);
-    console.log('Memory Buffer in MB: ' + requestedMemory)
+    console.log('Memory Buffer in MB: ' + (BUFFER_SIZE))
     setTimeout(() => {
-      buffer.fill(0); // Release the allocated memory
+
+      bufferArray.push(Buffer.alloc(BUFFER_SIZE))
+      bufferArray[bufferArray.length - 1].fill(0)
+      console.log(`Buffer array length: ${bufferArray.length}`)
+      
       console.log('Memory released');
     }, allocationDelay);
   };
 
-  // Simulate memory allocation in a loop
-    allocateMemory();
-
-  // Informative response indicating memory load simulation (not modifying memory directly)
-  res.send(`Simulating memory load with Buffer allocation and delay. Requested memory: ${requestedMemory}`);
+  allocateMemory();
+  res.send(`Memory allocated: ${(BUFFER_SIZE)}`);
 });
+
+// Deallocate latest added memory buffer
+app.get('/deallocate', (req, res) => {
+  const deallocateMemory = () => {
+    bufferArray.pop()
+    global.gc()
+  }
+  deallocateMemory()
+  res.send(`Deallocated memory`)
+})
+
+// Clear all memory buffers
+app.get('/clear', (req, res) => {
+  const clearMemory = () => {
+    bufferArray = null
+    global.gc()
+  }
+  clearMemory()
+  res.send(`Cleared all memory`)
+})
 
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);

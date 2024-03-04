@@ -14,4 +14,4 @@ EXPOSE 3000
 # This serves as a starting point for observation, not a strict limitation.
 
 
-CMD ["node", "app.js"]
+CMD ["node", "--expose-gc", "app.js"]

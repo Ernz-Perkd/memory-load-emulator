@@ -21,14 +21,15 @@ docker-compose up --build
 * Once running, using postman and GET method, run one of the following requests:
 * To allocate memory, use the following URL 
 ```
-http://localhost:3000/allocate?memory=<memorySize>
+http://localhost:3000/allocate?memory=<memorySize>&count=<bufferCount>
 ```
-where memorySize is the amount of memory in MB to be allocated incrementally to the app. Note that the maximum buffer size of nodejs is 4096 MB. 
+where memorySize is the amount of memory in MB to be allocated incrementally to the app, and the optional bufferCount is the number of times the mrmory is allocated (default value is 1). Note that the maximum buffer size of nodejs per buffer is 4096 MB. 
 
 * To deallocate latest memory added to the memory buffer
 ```
-http://localhost:3000/deallocate
+http://localhost:3000/deallocate?count=<bufferCount>
 ```
+where bufferCount is the number of most recent buffers to be removed
 
 * To clear all existing memory buffers
 ```
